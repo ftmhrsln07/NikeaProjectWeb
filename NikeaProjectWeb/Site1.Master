@@ -1,0 +1,219 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="NikeaProjectWeb.Site1" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <title>Furniture Website</title>
+    <link href="Style/StyleSheet1.css" rel="stylesheet" />
+
+    <style>
+        /* Unified Header Styling - Light Theme */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #ffffff;
+            color: #222;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        .site-logo {
+            height: 50px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: #222;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #ff9900;
+        }
+
+        .auth-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+
+        .auth-section label,
+        .auth-section a,
+        .auth-section .aspNetDisabled {
+            color: #222;
+            text-decoration: none;
+        }
+
+        .auth-section a:hover,
+        .auth-section .aspNetDisabled:hover {
+            color: #ff9900;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav, .auth-section {
+                margin-top: 10px;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #555;
+            font-size: 14px;
+        }
+
+        /* Side Panel */
+        .side-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+            padding: 20px;
+            z-index: 999;
+            transition: transform 0.3s ease;
+        }
+
+        .side-panel.open {
+            display: block;
+        }
+
+        .panel-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .close-btn {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #222;
+        }
+
+        .login-btn,
+        .create-account-btn {
+            background-color: #222;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover,
+        .create-account-btn:hover {
+            background-color: #ff9900;
+            color: #000;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server" />
+</head>
+
+<body>
+    <form id="form1" runat="server">
+
+        <!-- HEADER -->
+        <header class="header">
+            <!-- Logo -->
+            <a href="home.aspx">
+                <img src="Images/NIKEA.png" alt="NiKEA Logo" class="site-logo" />
+            </a>
+
+<!-- Navigation -->
+<nav class="nav">
+    <a href="home.aspx">Home</a>
+    <a href="about.aspx">About</a>
+
+    <% if (Session["role"] != null && Session["role"].ToString() == "Customer") { %>
+        <a href="productlist.aspx">Products</a>
+        <a href="ShoppingCart.aspx">Cart</a>
+        <a href="OrderHistory.aspx">Order History</a>
+    <% } %>
+
+    <% if (Session["role"] != null && Session["role"].ToString() == "Admin") { %>
+        <a href="AdminDashboard.aspx">Dashboard</a>
+    <% } %>
+</nav>
+
+            <!-- Authentication -->
+            <div class="auth-section">
+                <asp:Label ID="lblUserGreeting" runat="server" />
+                <asp:LinkButton ID="lnkLogin" runat="server" PostBackUrl="~/Login.aspx" Visible="false">Login</asp:LinkButton>
+                <asp:LinkButton ID="lnkRegister" runat="server" PostBackUrl="~/Register.aspx" Visible="false">Register</asp:LinkButton>
+                <asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click" Visible="false">Logout</asp:LinkButton>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server" />
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder2" runat="server" />
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p>&copy; 2025 NIKEA. All rights reserved.</p>
+        </footer>
+
+        <!-- LOGIN SIDE PANEL -->
+        <div id="side-panel" class="side-panel" aria-hidden="true">
+            <div class="panel-content">
+                <button class="close-btn" type="button" onclick="closePanel()" aria-label="Close Login Panel">&times;</button>
+                <h2>Log in to your account</h2>
+                <p>Welcome back! Please login to continue.</p>
+
+                <input type="text" placeholder="Email (username)" aria-label="Email" />
+                <input type="password" placeholder="Password" aria-label="Password" />
+                <button type="button" class="login-btn">Log In</button>
+
+                <hr />
+                <p>New to Nikea?</p>
+                <a href="register.aspx" class="create-account-btn">Create account</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        function openPanel() {
+            document.getElementById("side-panel").classList.add("open");
+        }
+
+        function closePanel() {
+            document.getElementById("side-panel").classList.remove("open");
+        }
+    </script>
+</body>
+</html>
